@@ -24,8 +24,6 @@ names(region_coord) <- coord$.id[coord$tile.border==0]
 
 region_coord2 <- region_coord
 names(region_coord2) <- NULL
-
-coord$area <- 0
  areas <- get_area(region_coord2)
 coord$area[coord$tile.border==0] <- unlist(areas)
 med_area <- median(coord$area[coord$tile.border==0])
@@ -42,4 +40,16 @@ p <- ggplot(datapoly, aes(x = X.y, y = Y.y)) +
 p
 ggplotly(p)
 
+#####Analyse overlap: take RAD51 clusters and quantifiy overlap with BRCA2 localizations
 
+#loop over clusters and measure overlap per cell
+
+######Take BRCA2 clusters and get overlap with RAD51
+
+######Number of clusters in vincinity
+
+#take 500 nm
+
+######Minimal distance
+
+#N localizations, RAD51, BRCA2

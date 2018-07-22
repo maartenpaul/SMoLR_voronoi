@@ -1,10 +1,16 @@
-folder <- "C:/Thunderstorm test/Nik/GG1"
+folder <- "F:/180704 GG1 IR 5Gy 2h/GG1 IR 2h"
 #folder <- "D:/Maarten/GG1"
-condition <- "GG1 IR"
+condition <- "GG1 IR 2h"
 
 source("0 Functions.R")
 
+remove(localizations)
 load(file = file.path(folder,"localizations_ROI.Rdata"))
+
+start <-paste("Clustering started:", format(Sys.time(), "%a %b %d %X %Y"))
+print(start)
+
+ptm <- proc.time()
 
 localizations <- llply(localizations,function(x){
   x$area <- 0
@@ -26,17 +32,18 @@ voronoi_area <- llply(voronoi, function(x){
   
 })
 
-
+#calculate area threshold
 area_threshold <- llply(voronoi_area,function(x){
-     med <- median(x$area[x$tile.border==0])
+     med <- median(x$area[x$tile.border==0])*2
     return(med)
 })
 
+#set threshold
 for (i in 1:length(voronoi_area)){
   voronoi_area[[i]] <- subset(voronoi_area[[i]],area<=area_threshold[i]&area!=0)
 }
 
-
+#assign cluster ID to the localizations
 clusters <- llply(voronoi_area,function(x){
    get_clusters(x,fac = 50,conn = 3)               
 
@@ -78,3 +85,10 @@ for (i in 1:length(localizations)){
   localizations[[i]][localizations[[i]]$Channel=="RAD51",] <- R51
 }
 save(localizations,file=file.path(folder,"localizations_clustered.Rdata"))
+
+for (i in 1:length(localizations)){
+ write.table(localizations[[i]],file = file.path(folder,paste0("localizations_clustered_",i,".txt")),col.names = T)
+}
+print(paste("Clustering finished:", format(Sys.time(), "%a %b %d %X %Y")))
+x <- proc.time() - ptm
+print(paste("It took", as.character(x[3]/60),"minutes for the script to run"))

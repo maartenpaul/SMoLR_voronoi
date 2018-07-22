@@ -4,6 +4,8 @@ library(dplyr)
 library(igraph)
 library(reticulate)
 library(SMoLR)
+library(ggplot2)
+library(plotly)
 
 #configuration of python, only run once
 #py_config()
@@ -74,13 +76,15 @@ get_voronoi_area <- function(x){
     parts <- length(region_coord)%/%100000
     rest <- length(region_coord)%%100000
     areas <- get_area(region_coord[1:100000])
-    
+    i <- 1
+    if(parts>1){
     for (i in 2:parts){
       areas <- c(areas,get_area(region_coord[(1+(i-1)*100000):(i*100000)]))
     }
-    
-    areas <- c(areas,get_area(region_coord[(1+(i)*100000):length(region_coord)]))
-      
+    }
+    if (rest>0){
+      areas <- c(areas,get_area(region_coord[(1+(i)*100000):length(region_coord)]))
+    }
   } else { 
     areas <- get_area(region_coord)
     
